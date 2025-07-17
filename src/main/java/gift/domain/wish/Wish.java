@@ -49,8 +49,16 @@ public class Wish {
         return id;
     }
 
+    public Member getMember() {
+        return member;
+    }
+
     public Long getMemberId() {
         return member.getId();
+    }
+
+    public Product getProduct() {
+        return product;
     }
 
     public Long getProductId() {
@@ -66,6 +74,6 @@ public class Wish {
     }
 
     public boolean isOwner(Long id) {
-        return id.equals(this.id);
+        return this.id == id;
     }
 }

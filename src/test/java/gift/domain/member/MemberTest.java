@@ -1,4 +1,4 @@
-package domain.member;
+package gift.domain.member;
 
 import gift.domain.member.Member;
 import gift.domain.member.MemberRole;

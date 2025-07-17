@@ -62,14 +62,13 @@ public class WishService {
         if (!wish.isOwner(member.getId())) {
             throw BusinessException.of(
                     SecurityErrorCode.AUTH_FORBIDDEN,
-                    "해당 상품에 접근할 권한이 없습니다.",
+                    "해당 Wish에 접근할 권한이 없습니다.",
                     HttpStatus.FORBIDDEN
             );
         }
         wishRepository.delete(wish);
     }
 
-    @Transactional
     private Wish create(Long memberId, Long productId, Integer quantity) {
         Member member = memberService.getById(memberId);
         Product product = productService.getById(productId);
@@ -77,7 +76,6 @@ public class WishService {
         return wishRepository.save(instance);
     }
 
-    @Transactional
     private Wish increaseQuantity(Wish wish, Integer addQuantity) {
         wish.addQuantity(addQuantity);
         return wish;

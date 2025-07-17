@@ -1,4 +1,4 @@
-package domain.wish;
+package gift.domain.wish;
 
 import org.junit.jupiter.api.Test;
 

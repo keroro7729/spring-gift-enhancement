@@ -1,4 +1,4 @@
-package domain.product;
+package gift.domain.product;
 
 import gift.domain.product.Product;
 import gift.domain.product.ProductDomainRuleException;

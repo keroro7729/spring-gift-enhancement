@@ -28,11 +28,13 @@ public class MemberService {
         this.jwtUtil = jwt;
     }
 
+    @Transactional
     public TokenResponseDto handleRegisterRequest(MemberRequestDto request) {
         register(request.email(), request.password());
         return login(request.email(), request.password());
     }
 
+    @Transactional
     public TokenResponseDto handleLoginRequest(MemberRequestDto request) {
         return login(request.email(), request.password());
     }
@@ -47,7 +49,6 @@ public class MemberService {
                 .orElseThrow(() -> new EntityNotFoundException("Member not found, id: " + id));
     }
 
-    @Transactional
     private Member register(String email, String plainPassword) {
         if (memberRepository.findByEmail(email).isPresent()) {
             throw new BusinessException.Builder(BusinessErrorCode.REGISTER_EMAIL_CONFLICT, "Register email conflict: email=" + email)
@@ -61,7 +62,6 @@ public class MemberService {
         return memberRepository.save(instance);
     }
 
-    @Transactional
     private TokenResponseDto login(String email, String plainPassword) {
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> BusinessException.of(
