@@ -65,15 +65,7 @@ public class Wish {
         this.id = id;
     }
 
-    public void setMember(Member member) {
-        this.member = member;
-    }
-
-    public void setProduct(Product product) {
-        this.product = product;
-    }
-
-    public void setQuantity(Integer quantity) {
-        this.quantity = quantity;
+    public boolean isOwner(Long id) {
+        return id.equals(this.id);
     }
 }

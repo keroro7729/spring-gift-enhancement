@@ -8,7 +8,7 @@ import gift.common.exception.code.BusinessErrorCode;
 import gift.common.exception.code.ResourceErrorCode;
 import gift.domain.product.Product;
 import gift.domain.product.ProductQueryOption;
-import gift.repository.jpa.ProductRepository;
+import gift.repository.ProductRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,7 +28,7 @@ public class ProductService {
     @Transactional
     public MessageResponseDto<ProductResponseDto> create(ProductRequestDto body) {
         Product instance = body.toEntity();
-        if (instance.involveKakao()) {
+        if (instance.isInvolveKakao()) {
             instance.waitApproval();
             Product created = productRepository.save(instance);
             return new MessageResponseDto<>(false, "카카오 관련 상품 승인 대기중", 202, ProductResponseDto.from(created));
@@ -63,7 +63,7 @@ public class ProductService {
         find(id);
         Product instance = body.toEntity();
         instance.setId(id);
-        if (instance.involveKakao()) {
+        if (instance.isInvolveKakao()) {
             instance.waitApproval();
             Product updated = productRepository.save(instance);
             return new MessageResponseDto<>(false, "카카오 관련 상품 승인 대기중", 202, ProductResponseDto.from(updated));

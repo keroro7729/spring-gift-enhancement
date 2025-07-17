@@ -7,7 +7,7 @@ import gift.common.exception.EntityNotFoundException;
 import gift.common.exception.code.BusinessErrorCode;
 import gift.common.exception.code.SecurityErrorCode;
 import gift.domain.member.Member;
-import gift.repository.jpa.MemberRepository;
+import gift.repository.MemberRepository;
 import gift.util.JwtUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;

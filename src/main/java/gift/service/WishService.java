@@ -8,8 +8,7 @@ import gift.common.exception.code.SecurityErrorCode;
 import gift.domain.member.Member;
 import gift.domain.product.Product;
 import gift.domain.wish.Wish;
-import gift.repository.jpa.ProductRepository;
-import gift.repository.jpa.WishRepository;
+import gift.repository.WishRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -60,7 +59,7 @@ public class WishService {
                         "Wish does not exist: id = " + wishId,
                         HttpStatus.NOT_FOUND
                 ));
-        if (!wish.getMemberId().equals(member.getId())) {
+        if (!wish.isOwner(member.getId())) {
             throw BusinessException.of(
                     SecurityErrorCode.AUTH_FORBIDDEN,
                     "해당 상품에 접근할 권한이 없습니다.",
