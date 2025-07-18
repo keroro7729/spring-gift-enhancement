@@ -47,8 +47,7 @@ public class WishService {
     }
 
     public List<WishResponseDto> getOwnList(Pageable pageable, Member member) {
-        return wishRepository.findAll(pageable).stream()
-                .filter(w -> w.isOwner(member.getId()))
+        return wishRepository.findAllByMember(pageable, member).stream()
                 .map(WishResponseDto::from)
                 .toList();
     }

@@ -8,6 +8,7 @@ import gift.common.exception.code.BusinessErrorCode;
 import gift.common.exception.code.ResourceErrorCode;
 import gift.domain.product.Product;
 import gift.domain.product.ProductQueryOption;
+import gift.domain.product.ProductState;
 import gift.repository.ProductRepository;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -53,11 +54,23 @@ public class ProductService {
     }
 
     public List<ProductResponseDto> getList(Pageable pageable, ProductQueryOption option) {
-        return productRepository.findAll(pageable).stream()
-                .filter(p -> p.isShowable(option))
-                .sorted(Comparator.comparing(Product::getId))
-                .map(ProductResponseDto::from)
-                .toList();
+        switch (option) {
+            case ALL -> {
+                return productRepository.findAll(pageable).stream()
+                    .map(ProductResponseDto::from)
+                    .toList();
+            }
+            case SELLING -> {
+                return productRepository.findAllByState(pageable, ProductState.SELLING).stream()
+                        .map(ProductResponseDto::from)
+                        .toList();
+            }
+            default -> throw BusinessException.of(
+                    BusinessErrorCode.UNKNOWN_PRODUCT_QUERY_OPTION,
+                    "Unknown product query option: " + option.name(),
+                    HttpStatus.BAD_REQUEST
+            );
+        }
     }
 
     @Transactional
