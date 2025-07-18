@@ -74,6 +74,6 @@ public class Wish {
     }
 
     public boolean isOwner(Long id) {
-        return this.id == id;
+        return getMemberId().equals(id);
     }
 }

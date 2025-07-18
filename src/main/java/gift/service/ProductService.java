@@ -9,6 +9,8 @@ import gift.common.exception.code.ResourceErrorCode;
 import gift.domain.product.Product;
 import gift.domain.product.ProductQueryOption;
 import gift.repository.ProductRepository;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,8 +52,8 @@ public class ProductService {
         return ProductResponseDto.from(result);
     }
 
-    public List<ProductResponseDto> getList(ProductQueryOption option) {
-        return productRepository.findAll().stream()
+    public List<ProductResponseDto> getList(Pageable pageable, ProductQueryOption option) {
+        return productRepository.findAll(pageable).stream()
                 .filter(p -> p.isShowable(option))
                 .sorted(Comparator.comparing(Product::getId))
                 .map(ProductResponseDto::from)

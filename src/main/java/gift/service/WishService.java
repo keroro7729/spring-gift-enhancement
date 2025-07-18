@@ -9,6 +9,8 @@ import gift.domain.member.Member;
 import gift.domain.product.Product;
 import gift.domain.wish.Wish;
 import gift.repository.WishRepository;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,9 +46,9 @@ public class WishService {
         return WishResponseDto.from(wish);
     }
 
-    public List<WishResponseDto> getOwnList(Member member) {
-        return wishRepository.findAll().stream()
-                .filter(w -> w.getMemberId().equals(member.getId()))
+    public List<WishResponseDto> getOwnList(Pageable pageable, Member member) {
+        return wishRepository.findAll(pageable).stream()
+                .filter(w -> w.isOwner(member.getId()))
                 .map(WishResponseDto::from)
                 .toList();
     }
