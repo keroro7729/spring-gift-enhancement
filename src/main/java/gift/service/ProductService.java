@@ -87,7 +87,6 @@ public class ProductService {
             Product updated = productRepository.save(instance);
             return new MessageResponseDto<>(false, "카카오 관련 상품 승인 대기중", 202, ProductResponseDto.from(updated));
         }
-        instance.onBoard();
         Product updated = productRepository.save(instance);
         return new MessageResponseDto<>(true, "상품 수정 완료", 200, ProductResponseDto.from(updated));
     }

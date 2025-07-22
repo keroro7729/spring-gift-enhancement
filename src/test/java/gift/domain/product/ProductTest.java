@@ -6,7 +6,7 @@ import gift.domain.product.ProductState;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ProductTest {
 
@@ -14,6 +14,13 @@ public class ProductTest {
     void 임시생성시_상태는_TEMP() {
         Product product = Product.tempInstance("상품", 100L, null);
         assertThat(product.getState()).isEqualTo(ProductState.TEMP);
+    }
+
+    @Test
+    void 신규_생성시_옵션이_null이면_ProductDomainRuleException() {
+        assertThrows(ProductDomainRuleException.class, () -> {
+            Product.create("상품", 100L, null, null);
+        }, "상품 생성시 옵션 유효성 검사 실패");
     }
 
     @Test
@@ -49,5 +56,29 @@ public class ProductTest {
 
         product = Product.tempInstance("일반_상품", 1000L, null);
         assertThat(product.isInvolveKakao()).isEqualTo(false);
+    }
+
+    @Test
+    void addOption() {
+        ProductOption option = ProductOption.of("옵션", 999);
+        Product product = Product.create("상품", 1000L, null, option);
+
+        ProductOption newOption = ProductOption.of("새로운옵션", 888);
+        product.addOption(newOption);
+
+        assertTrue(product.getOptions().contains(newOption), "새로운 옵션 추가 실패");
+        assertEquals(2, product.getOptions().size(), "새로운 옵션 추가 실패");
+    }
+
+    @Test
+    void removeOption() {
+        Product product = Product.create("상품", 1000L, null, ProductOption.of("test 옵션", 2));
+        ProductOption option = ProductOption.of("옵션", 999);
+        product.addOption(option);
+
+        product.removeOption(option);
+
+        assertFalse(product.getOptions().contains(option), "옵션 삭제 실패");
+        assertEquals(1, product.getOptions().size(), "옵션 삭제 실패");
     }
 }

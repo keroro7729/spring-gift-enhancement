@@ -64,6 +64,9 @@ public class Product {
     }
 
     public void addOption(ProductOption option) {
+        if (option == null) {
+            throw new ProductDomainRuleException("옵션은 null 일 수 없습니다!");
+        }
         options.add(option);
         option.setProduct(this);
     }
