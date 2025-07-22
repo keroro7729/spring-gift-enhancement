@@ -54,4 +54,24 @@ public class ProductOption {
             throw new ProductOptionException("상품 옵션 수량은 최소 1개 이상 1억 개 미만");
         }
     }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public Integer getQuantity() {
+        return quantity;
+    }
+
+    public Product getProduct() {
+        return product;
+    }
+
+    public void setProduct(Product product) {
+        this.product = product;
+    }
 }

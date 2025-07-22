@@ -2,6 +2,9 @@ package gift.domain.product;
 
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table(name = "product")
 public class Product {
@@ -24,6 +27,9 @@ public class Product {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private ProductState state;
+
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ProductOption> options = new ArrayList<>();
 
     protected Product() {
     }
@@ -61,6 +67,16 @@ public class Product {
 
     public boolean isInvolveKakao()  {
         return name.matches(".*카카오.*");
+    }
+
+    public void addOption(ProductOption option) {
+        options.add(option);
+        option.setProduct(this);
+    }
+
+    public void removeOption(ProductOption option) {
+        options.remove(option);
+        option.setProduct(null);
     }
 
     public Long getId() {
