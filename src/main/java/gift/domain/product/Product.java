@@ -36,33 +36,27 @@ public class Product {
 
     private Product(Long id, String name, Long price, String imageUrl, ProductState state) {
         this.id = id;
+        validateName(name);
         this.name = name;
+        validatePrice(price);
         this.price = price;
         this.imageUrl = imageUrl;
+        validateState(state);
         this.state = state;
     }
 
     public static Product of(Long id, String name, Long price, String imageUrl, ProductState state) {
-        if (name == null || name.isBlank()) {
-            throw new ProductDomainRuleException("상품명 필수!");
-        }
-        if (!name.matches("^[A-Za-z가-힣0-9()\\[\\]+\\-&/_ ]{1,15}$")) {
-            throw new ProductDomainRuleException("상품명은 15자 이하의 영문, 한글, 숫자 및 특수기호 ()[]+-&/_만 허용됨: " + name);
-        }
-        if (price == null) {
-            throw new ProductDomainRuleException("상품 가격 필수!");
-        }
-        if (price < 0 || MAX_PRICE < price) {
-            throw new ProductDomainRuleException("상품 가격은 10자리 이하의 양수여야함: " + price);
-        }
-        if (state == null) {
-            throw new ProductStateException("상품 상태 필수!");
-        }
         return new Product(id, name, price, imageUrl, state);
     }
 
     public static Product tempInstance(String name, Long price, String imageUrl) {
         return of(null, name, price, imageUrl, ProductState.TEMP);
+    }
+
+    public static Product create(String name, Long price, String imageUrl, ProductOption option) {
+        Product created = new Product(null, name, price, imageUrl, ProductState.TEMP);
+        created.addOption(option);
+        return created;
     }
 
     public boolean isInvolveKakao()  {
@@ -103,8 +97,20 @@ public class Product {
         return state.getStateName();
     }
 
+    public List<ProductOption> getOptions() {
+        return List.copyOf(options);
+    }
+
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public void update(String name, Long price, String imageUrl) {
+        validateName(name);
+        validatePrice(price);
+        this.name = name;
+        this.price = price;
+        this.imageUrl = imageUrl;
     }
 
     public void onBoard() {
@@ -123,6 +129,30 @@ public class Product {
             case ALL -> true;
             case SELLING -> state == ProductState.SELLING;
         };
+    }
+
+    private void validateName(String name) {
+        if (name == null || name.isBlank()) {
+            throw new ProductDomainRuleException("상품명 필수!");
+        }
+        if (!name.matches("^[A-Za-z가-힣0-9()\\[\\]+\\-&/_ ]{1,15}$")) {
+            throw new ProductDomainRuleException("상품명은 15자 이하의 영문, 한글, 숫자 및 특수기호 ()[]+-&/_만 허용됨: " + name);
+        }
+    }
+
+    private void validatePrice(Long price) {
+        if (price == null) {
+            throw new ProductDomainRuleException("상품 가격 필수!");
+        }
+        if (price < 0 || MAX_PRICE < price) {
+            throw new ProductDomainRuleException("상품 가격은 10자리 이하의 양수여야함: " + price);
+        }
+    }
+
+    private void validateState(ProductState state) {
+        if (state == null) {
+            throw new ProductStateException("상품 상태 필수!");
+        }
     }
 
     @Override

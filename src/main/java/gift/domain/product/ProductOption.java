@@ -33,8 +33,8 @@ public class ProductOption {
         this.product = product;
     }
 
-    public static ProductOption of(String name, Integer quantity, Product product) {
-        return new ProductOption(null, name, quantity, product);
+    public static ProductOption of(String name, Integer quantity) {
+        return new ProductOption(null, name, quantity, null);
     }
 
     private void validateName(String name) {

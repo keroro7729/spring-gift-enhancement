@@ -1,7 +1,10 @@
 package gift.controller;
 
+import gift.common.dto.request.ProductOptionRequestDto;
 import gift.common.dto.request.ProductRequestDto;
+import gift.common.dto.request.ProductUpdateRequestDto;
 import gift.common.dto.response.MessageResponseDto;
+import gift.common.dto.response.ProductOptionResponseDto;
 import gift.common.dto.response.ProductResponseDto;
 import gift.domain.product.ProductQueryOption;
 import gift.service.ProductService;
@@ -49,7 +52,7 @@ public class ProductController {
 
     @PutMapping("/{id}")
     public ResponseEntity<MessageResponseDto<ProductResponseDto>> updateProduct(@PathVariable Long id,
-                                                                                @RequestBody ProductRequestDto body) {
+                                                                                @Valid @RequestBody ProductUpdateRequestDto body) {
         MessageResponseDto<ProductResponseDto> response = productService.update(id, body);
         if (response.success()) {
             return ResponseEntity.ok(response);
@@ -60,6 +63,27 @@ public class ProductController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
         productService.delete(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{productId}/options")
+    public ResponseEntity<ProductOptionResponseDto> addOptionTo(@PathVariable Long productId,
+                                            @Valid @RequestBody ProductOptionRequestDto body) {
+        ProductOptionResponseDto created = ProductOptionResponseDto.from(productService.addOptionTo(productId, body));
+        String location = "/api/products/"+productId+"/options";
+        return ResponseEntity.created(URI.create(location)).body(created);
+    }
+
+    @GetMapping("/{productId}/options")
+    public ResponseEntity<List<ProductOptionResponseDto>> getOptionsOf(@PathVariable Long productId) {
+        List<ProductOptionResponseDto> response = productService.getOptionsOf(productId);
+        return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping("/{productId}/options/{optionId}")
+    public ResponseEntity<Void> deleteOptionOf(@PathVariable Long productId,
+                                               @PathVariable Long optionId) {
+        productService.deleteOptionOf(productId, optionId);
         return ResponseEntity.noContent().build();
     }
 }
