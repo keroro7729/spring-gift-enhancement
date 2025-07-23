@@ -4,6 +4,10 @@ import gift.domain.product.Product;
 import gift.domain.product.ProductDomainRuleException;
 import gift.domain.product.ProductState;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.NullSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -23,30 +27,24 @@ public class ProductTest {
         }, "상품 생성시 옵션 유효성 검사 실패");
     }
 
-    @Test
-    void 상품이름_유효성검사() {
-        String[] wrongNames = {
-                null, "", "길이 15 초과 상품 이름11",
-                "상품!", "상품@", "상품#", "상품$", "상품%", "상품^", "상품*", "상품=",
-                "상품~", "상품`", "상품{", "상품}", "상품\\", "상품|", "상품;", "상품:", "상품?"
-        };
-        for (String wrongName : wrongNames) {
-            assertThrows(ProductDomainRuleException.class, () -> {
-                Product.tempInstance(wrongName, 1000L, null);
-            }, "상품이름 유효성 검사 실패: " + wrongName);
-        }
+    @ParameterizedTest
+    @NullAndEmptySource
+    @ValueSource(strings = {"길이 15 초과 상품 이름11",
+            "상품!", "상품@", "상품#", "상품$", "상품%", "상품^", "상품*", "상품=",
+            "상품~", "상품`", "상품{", "상품}", "상품\\", "상품|", "상품;", "상품:", "상품?"})
+    void 상품이름_유효성검사(String wrongName) {
+        assertThrows(ProductDomainRuleException.class, () -> {
+            Product.tempInstance(wrongName, 1000L, null);
+        }, "상품이름 유효성 검사 실패: " + wrongName);
     }
 
-    @Test
-    void 상품가격_유효성검사() {
-        Long[] wrongPrices = {
-                null, -1L, 10000000000L
-        };
-        for (Long wrongPrice : wrongPrices) {
-            assertThrows(ProductDomainRuleException.class, () -> {
-                Product.tempInstance("상품", wrongPrice, null);
-            }, "상품 가격 유효성 검사 실패: "+wrongPrice);
-        }
+    @ParameterizedTest
+    @NullSource
+    @ValueSource(longs = {-1L, 10000000000L})
+    void 상품가격_유효성검사(Long wrongPrice) {
+        assertThrows(ProductDomainRuleException.class, () -> {
+            Product.tempInstance("상품", wrongPrice, null);
+        }, "상품 가격 유효성 검사 실패: "+wrongPrice);
     }
 
     @Test
