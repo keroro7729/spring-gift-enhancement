@@ -6,10 +6,14 @@ import gift.common.dto.request.ProductUpdateRequestDto;
 import gift.common.dto.response.MessageResponseDto;
 import gift.common.dto.response.ProductOptionResponseDto;
 import gift.common.dto.response.ProductResponseDto;
+import gift.common.exception.BusinessException;
+import gift.common.exception.code.BusinessErrorCode;
 import gift.domain.product.ProductQueryOption;
 import gift.service.ProductService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -45,8 +49,17 @@ public class ProductController {
 
     @GetMapping
     public ResponseEntity<List<ProductResponseDto>> getAllProduct(@RequestParam(defaultValue = "SELLING") ProductQueryOption option,
-                                                                  Pageable pageable) {
-        List<ProductResponseDto> response = productService.getList(pageable, option);
+                                                                  @PageableDefault(sort = "id") Pageable pageable) {
+        List<ProductResponseDto> response;
+        switch (option) {
+            case ALL -> response = productService.getAll(pageable);
+            case SELLING -> response = productService.getSelling(pageable);
+            default -> throw BusinessException.of(
+                    BusinessErrorCode.UNKNOWN_PRODUCT_QUERY_OPTION,
+                    "Unknown product query option: " + option.name(),
+                    HttpStatus.BAD_REQUEST
+            );
+        }
         return ResponseEntity.ok(response);
     }
 
@@ -68,9 +81,9 @@ public class ProductController {
 
     @PostMapping("/{productId}/options")
     public ResponseEntity<ProductOptionResponseDto> addOptionTo(@PathVariable Long productId,
-                                            @Valid @RequestBody ProductOptionRequestDto body) {
+                                                                @Valid @RequestBody ProductOptionRequestDto body) {
         ProductOptionResponseDto created = ProductOptionResponseDto.from(productService.addOptionTo(productId, body));
-        String location = "/api/products/"+productId+"/options";
+        String location = "/api/products/" + productId + "/options";
         return ResponseEntity.created(URI.create(location)).body(created);
     }
 

@@ -56,24 +56,16 @@ public class ProductService {
         return ProductResponseDto.from(result);
     }
 
-    public List<ProductResponseDto> getList(Pageable pageable, ProductQueryOption option) {
-        switch (option) {
-            case ALL -> {
-                return productRepository.findAll(pageable).stream()
-                        .map(ProductResponseDto::from)
-                        .toList();
-            }
-            case SELLING -> {
-                return productRepository.findAllByState(pageable, ProductState.SELLING).stream()
-                        .map(ProductResponseDto::from)
-                        .toList();
-            }
-            default -> throw BusinessException.of(
-                    BusinessErrorCode.UNKNOWN_PRODUCT_QUERY_OPTION,
-                    "Unknown product query option: " + option.name(),
-                    HttpStatus.BAD_REQUEST
-            );
-        }
+    public List<ProductResponseDto> getAll(Pageable pageable) {
+        return productRepository.findAll(pageable).stream()
+                .map(ProductResponseDto::from)
+                .toList();
+    }
+
+    public List<ProductResponseDto> getSelling(Pageable pageable) {
+        return productRepository.findAllByState(pageable, ProductState.SELLING).stream()
+                .map(ProductResponseDto::from)
+                .toList();
     }
 
     @Transactional
