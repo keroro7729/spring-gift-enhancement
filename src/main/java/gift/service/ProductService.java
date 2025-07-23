@@ -9,10 +9,7 @@ import gift.common.dto.response.ProductResponseDto;
 import gift.common.exception.BusinessException;
 import gift.common.exception.code.BusinessErrorCode;
 import gift.common.exception.code.ResourceErrorCode;
-import gift.domain.product.Product;
-import gift.domain.product.ProductOption;
-import gift.domain.product.ProductQueryOption;
-import gift.domain.product.ProductState;
+import gift.domain.product.*;
 import gift.repository.ProductOptionRepository;
 import gift.repository.ProductRepository;
 import org.springframework.data.domain.Pageable;
@@ -20,6 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -115,6 +113,28 @@ public class ProductService {
         return created;
     }
 
+    @Transactional
+    public ProductOption applyOptionSold(Long productId, Long optionId, Integer soldQuantity) {
+        Product product = find(productId);
+        ProductOption option = product.getOptionById(optionId)
+                .orElseThrow(() -> BusinessException.of(
+                        ResourceErrorCode.PRODUCT_OPTION_NOT_FOUND,
+                        "상품 옵션이 존재하지 않습니다. id = " + optionId,
+                        HttpStatus.NOT_FOUND
+                ));
+
+        try {
+            option.decreaseQuantity(soldQuantity);
+        } catch (ProductOptionException e) {
+            throw BusinessException.of(
+                    BusinessErrorCode.EXCEED_PRODUCT_OPTION_QUANTITY,
+                    e.getMessage(),
+                    HttpStatus.BAD_REQUEST
+            );
+        }
+        return option;
+    }
+
     public List<ProductOptionResponseDto> getOptionsOf(Long productId) {
         Product product = find(productId);
         return product.getOptions().stream()
@@ -125,7 +145,7 @@ public class ProductService {
     @Transactional
     public void deleteOptionOf(Long productId, Long optionId) {
         Product product = find(productId);
-        ProductOption option = optionRepository.findById(optionId)
+        ProductOption option = product.getOptionById(optionId)
                 .orElseThrow(() -> BusinessException.of(
                         ResourceErrorCode.PRODUCT_OPTION_NOT_FOUND,
                         "상품 옵션이 존재하지 않습니다. id = " + optionId,

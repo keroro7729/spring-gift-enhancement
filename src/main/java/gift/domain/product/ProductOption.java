@@ -74,4 +74,11 @@ public class ProductOption {
     public void setProduct(Product product) {
         this.product = product;
     }
+
+    public void decreaseQuantity(Integer soldQuantity) {
+        if (this.quantity < soldQuantity) {
+            throw new ProductOptionException("상품 옵션 수량을 초과한 주문이 거절되었습니다. 남은수량: " + this.quantity);
+        }
+        this.quantity -= soldQuantity;
+    }
 }

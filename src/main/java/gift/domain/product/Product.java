@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Entity
 @Table(name = "product")
@@ -102,6 +103,15 @@ public class Product {
 
     public List<ProductOption> getOptions() {
         return List.copyOf(options);
+    }
+
+    public Optional<ProductOption> getOptionById(Long id) {
+        for (ProductOption o : options) {
+            if (id.equals(o.getId())) {
+                return Optional.of(o);
+            }
+        }
+        return Optional.empty();
     }
 
     public void setId(Long id) {
